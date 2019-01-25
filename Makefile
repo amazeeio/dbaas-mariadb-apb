@@ -1,6 +1,6 @@
 DOCKERHOST = docker.io
-DOCKERORG = appuio
-IMAGENAME = dbaas-mariadb-apb
+DOCKERORG = lagoonapb
+IMAGENAME = lagoon-dbaas-mariadb-apb
 TAG = latest
 USER=$(shell id -u)
 PWD=$(shell pwd)

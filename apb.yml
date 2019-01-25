@@ -4,14 +4,29 @@ description: MariaDB as a Service
 bindable: True
 async: optional
 metadata:
-  displayName: DBaaS - MariaDB (APB)
+  displayName: Lagoon DBaaS - MariaDB (APB)
   dependencies: []
-  providerDisplayName: APPUiO
+  providerDisplayName: Lagoon
   imageUrl: >-
-    https://appuio.ch/images/appuio_logo-f81608f1.svg
+    https://www.amazee.io/sites/default/files/2018-10/amazeeio.png
 plans:
   - name: default
-    description: This default plan creates a DB user and schema
+    description: This default plan creates a DB user and schema (same as production plan)
+    free: True
+    metadata: {}
+    parameters: []
+  - name: production
+    description: This default plan creates a DB user and schema for production sites
+    free: True
+    metadata: {}
+    parameters: []
+  - name: staging
+    description: This default plan creates a DB user and schema for staging sites
+    free: True
+    metadata: {}
+    parameters: []
+  - name: development
+    description: This default plan creates a DB user and schema for development sites
     free: True
     metadata: {}
     parameters: []

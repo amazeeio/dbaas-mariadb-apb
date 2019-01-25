@@ -8,21 +8,21 @@
 
 - set_fact:
     ensure_state: "{{ (apb_action == 'provision') | ternary('present', 'absent') }}"
-    secrets_path: "/etc/apb-secrets/apb-dbaas-db-credentials"
+    secret: "/etc/apb-secrets/apb-lagoon-dbaas-db-credentials/{% if _apb_plan_id == 'default'%}production{% else %}{{ _apb_plan_id }}{% endif %}"
 
 - name: read DB credentials
   set_fact:
-    mariadb_hostname: "{{ lookup('file', secrets_path ~ '/mariadb_hostname') }}"
-    mariadb_port: "{{ lookup('file', secrets_path ~ '/mariadb_port') }}"
-    mariadb_user: "{{ lookup('password', secrets_path ~ '/mariadb_user') }}"
-    mariadb_password: "{{ lookup('password', secrets_path ~ '/mariadb_password') }}"
+    mariadb_hostname: "{{ lookup('file', secret ~ '_mariadb_hostname') }}"
+    mariadb_port: "{{ lookup('file', secret ~ '_mariadb_port') }}"
+    mariadb_user: "{{ lookup('file', secret ~ '_mariadb_user') }}"
+    mariadb_password: "{{ lookup('file', secret ~ '_mariadb_password') }}"
 
 - name: generate DB credentials
   when: apb_action == 'provision'
   block:
     - set_fact:
-        create_db_name: "{{ lookup('password', '/tmp/_name length=5 chars=ascii_letters') }}"
-        create_db_user: "{{ lookup('password', '/tmp/_user length=5 chars=ascii_letters') }}"
+        create_db_name: "{{ namespace | truncate(50, true, '') }}_{{ lookup('password', '/tmp/_name length=5 chars=ascii_letters') }}"
+        create_db_user: "{{ lookup('password', '/tmp/_user length=16 chars=ascii_letters') }}"
         create_db_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_letters') }}"
     - name: Encode bind credentials
       asb_encode_binding:

@@ -6,19 +6,31 @@ This Ansible playbook bundle provisions users and databases on a existing MariaD
 Set up the Ansible service broker to import APBs from the Docker Hub appuio repository:
 ```yaml
 registry:
-  - name: appuio
+  - name: amazeeiolagoon
     type: dockerhub
-    org: appuio
+    org: amazeeiolagoon
     tag: latest
     white_list: [.*-apb$]
 ```
 
-To provide the admin user credentials to connect to the MariaDB, a secret with the name `dbaas-db-credentials` needs to exist in the Ansible service broker namespace:
+To provide the admin user credentials to connect to the MariaDB, two secrets with the name `dbaas-db-credentials-production` and `dbaas-db-credentials-development` needs to exist in the Ansible service broker namespace:
 ```yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: dbaas-db-credentials
+  name: dbaas-db-credentials-production
+type: Opaque
+stringData:
+  mariadb_hostname: db.maria.com
+  mariadb_password: myPassword
+  mariadb_port: '3306'
+  mariadb_user: root
+```
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dbaas-db-credentials-development
 type: Opaque
 stringData:
   mariadb_hostname: db.maria.com
@@ -30,8 +42,11 @@ The Ansible service broker needs to be configured to mount the secret in provisi
 ```yaml
 secrets:
 - title: DBaaS database credentials
-  secret: dbaas-db-credentials
-  apb_name: appuio-dbaas-mariadb-apb
+  secret: dbaas-db-credentials-production
+  apb_name: lagoon-dbaas-mariadb-apb
+- title: DBaaS database credentials
+  secret: dbaas-db-credentials-development
+  apb_name: lagoon-dbaas-mariadb-apb
 ```
 
 ## Development environment
