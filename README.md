@@ -22,6 +22,7 @@ metadata:
 type: Opaque
 stringData:
   mariadb_hostname: db.maria.com
+  mariadb_reader_hostname: db.reader.maria.com
   mariadb_password: myPassword
   mariadb_port: '3306'
   mariadb_user: root
@@ -34,6 +35,7 @@ metadata:
 type: Opaque
 stringData:
   mariadb_hostname: db.maria.com
+  mariadb_reader_hostname: db.reader.maria.com
   mariadb_password: myPassword
   mariadb_port: '3306'
   mariadb_user: root
@@ -62,3 +64,6 @@ Install the [APB CLI](https://github.com/ansibleplaybookbundle/ansible-playbook-
 
 ## Release
 An automatic Docker build is set up for this repository. If you change stuff in `apb.yml` don't forget to run `apb prepare` before committing.
+
+## Reader configuration
+If the mariadb/mysql supports a reader instance aswell as a writer, you can configure the `mariadb_reader_hostname` to point to the endpoint for a reader, otherwise just populate it with the same value as the `mariadb_hostname` if one is not available

@@ -13,6 +13,7 @@
 - name: read DB credentials
   set_fact:
     mariadb_hostname: "{{ lookup('file', secret ~ '_mariadb_hostname') }}"
+    mariadb_reader_hostname: "{{ lookup('file', secret ~ '_mariadb_reader_hostname') }}"
     mariadb_port: "{{ lookup('file', secret ~ '_mariadb_port') }}"
     mariadb_user: "{{ lookup('file', secret ~ '_mariadb_user') }}"
     mariadb_password: "{{ lookup('file', secret ~ '_mariadb_password') }}"
@@ -30,6 +31,7 @@
           DB_TYPE: "{{ 'mariadb' }}"
           DB_NAME: "{{ create_db_name }}"
           DB_HOST: "{{ app_name }}"
+          DB_READER_HOST: "{{ app_reader_name }}"
           DB_PORT: "{{ mariadb_port }}"
           DB_USER: "{{ create_db_user }}"
           DB_PASSWORD: "{{ create_db_password }}"
@@ -79,6 +81,14 @@
     namespace: "{{ namespace }}"
     type: ExternalName
     external_name: "{{ mariadb_hostname }}"
+
+- name: "{{ apb_action }} OpenShift service"
+  k8s_v1_service:
+    state: "{{ ensure_state }}"
+    name: "{{ app_reader_name }}"
+    namespace: "{{ namespace }}"
+    type: ExternalName
+    external_name: "{{ mariadb_reader_hostname }}"
 
 - name: "{{ apb_action }} secret with DB credentials"
   k8s:

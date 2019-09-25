@@ -6,3 +6,4 @@ _apb_service_class_id: 0
 _apb_service_instance_id: 0
 
 app_name: "mariadb-{{ _apb_service_instance_id }}"
+app_reader_name: "mariadb-reader-{{ _apb_service_instance_id }}"
