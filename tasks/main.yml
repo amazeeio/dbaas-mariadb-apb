@@ -23,7 +23,7 @@
   block:
     - set_fact:
         create_db_name: "{{ namespace | truncate(50, true, '') }}_{{ lookup('password', '/tmp/_name length=5 chars=ascii_letters') }}"
-        create_db_user: "{{ lookup('password', '/tmp/_user length=16 chars=ascii_letters') }}"
+        create_db_user: "{{ namespace | truncate(10, true, '') }}_{{ lookup('password', '/tmp/_user length=5 chars=ascii_letters') }}"
         create_db_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_letters') }}"
     - name: Encode bind credentials
       asb_encode_binding:
