@@ -8,15 +8,15 @@
 
 - set_fact:
     ensure_state: "{{ (apb_action == 'provision') | ternary('present', 'absent') }}"
-    secret: "/etc/apb-secrets/apb-lagoon-dbaas-db-credentials/{% if _apb_plan_id == 'default'%}production{% else %}{{ _apb_plan_id }}{% endif %}"
+    secret: "/etc/apb-secrets/apb-dbaas-db-credentials/{% if _apb_plan_id == 'default'%}production{% else %}{{ _apb_plan_id }}{% endif %}_"
 
 - name: read DB credentials
   set_fact:
-    mariadb_hostname: "{{ lookup('file', secret ~ '_mariadb_hostname') }}"
-    mariadb_reader_hostname: "{{ lookup('file', secret ~ '_mariadb_reader_hostname') }}"
-    mariadb_port: "{{ lookup('file', secret ~ '_mariadb_port') }}"
-    mariadb_user: "{{ lookup('file', secret ~ '_mariadb_user') }}"
-    mariadb_password: "{{ lookup('file', secret ~ '_mariadb_password') }}"
+    mariadb_hostname: "{{ lookup('file', secret ~ 'mariadb_hostname') }}"
+    mariadb_reader_hostname: "{{ lookup('file', secret ~ 'mariadb_reader_hostname') }}"
+    mariadb_port: "{{ lookup('file', secret ~ 'mariadb_port') }}"
+    mariadb_user: "{{ lookup('file', secret ~ 'mariadb_user') }}"
+    mariadb_password: "{{ lookup('file', secret ~ 'mariadb_password') }}"
 
 - name: generate DB credentials
   when: apb_action == 'provision'
