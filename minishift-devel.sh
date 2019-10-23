@@ -11,9 +11,9 @@ if [[ -z "$KUBECONFIG" ]] || [[ $(realpath "$KUBECONFIG") = $(realpath "$HOME/.k
 fi
 
 # start minishift with the appropriate components
-minishift start --cpus=4 --memory=8GB
-minishift openshift component add service-catalog
-minishift openshift component add automation-service-broker
+minishift --profile dbaas-test start --cpus=4 --memory=8GB
+minishift --profile dbaas-test openshift component add service-catalog
+minishift --profile dbaas-test openshift component add automation-service-broker
 
 # give developer cluster-admin for apb builds/installs
 oc login -u system:admin
