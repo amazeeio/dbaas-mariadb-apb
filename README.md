@@ -8,9 +8,9 @@ Set up the Ansible service broker to import APBs from the Docker Hub appuio repo
 
 ```yaml
 registry:
-  - name: amazeeiolagoon
+  - name: lagoon
     type: dockerhub
-    org: amazeeiolagoon
+    org: lagoonapb
     tag: latest
     white_list: [.*-apb$]
 ```
