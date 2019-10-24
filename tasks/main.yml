@@ -13,7 +13,7 @@
 - name: read DB credentials
   set_fact:
     mariadb_hostname: "{{ lookup('file', secret ~ '_mariadb_hostname') }}"
-    mariadb_readreplica_hostname: "{{ lookup('file', secret ~ '_mariadb_readreplica_hostname') }}"
+    mariadb_readreplica_hostname: "{{ lookup('file', secret ~ '_mariadb_readreplica_hostname', errors='warn') }}"
     mariadb_port: "{{ lookup('file', secret ~ '_mariadb_port') }}"
     mariadb_user: "{{ lookup('file', secret ~ '_mariadb_user') }}"
     mariadb_password: "{{ lookup('file', secret ~ '_mariadb_password') }}"
@@ -31,7 +31,7 @@
           DB_TYPE: "{{ 'mariadb' }}"
           DB_NAME: "{{ create_db_name }}"
           DB_HOST: "{{ app_name }}"
-          DB_READREPLICA_HOST: "{{ app_readreplica_name }}"
+          DB_READREPLICA_HOST: "{% if mariadb_readreplica_hostname %}{{ app_readreplica_name }}{% endif %}"
           DB_PORT: "{{ mariadb_port }}"
           DB_USER: "{{ create_db_user }}"
           DB_PASSWORD: "{{ create_db_password }}"
@@ -84,11 +84,13 @@
 
 - name: "{{ apb_action }} OpenShift readreplica service"
   k8s_v1_service:
-    state: "{{ ensure_state }}"
+    # state is absent if mariadb_readreplica_hostname is empty
+    state: "{% if mariadb_readreplica_hostname %}{{ ensure_state }}{% else %}absent{% endif %}"
     name: "{{ app_readreplica_name }}"
     namespace: "{{ namespace }}"
     type: ExternalName
-    external_name: "{{ mariadb_readreplica_hostname }}"
+    # mariadb_hostname is used here as a default just because external_name is required.
+    external_name: "{{ mariadb_readreplica_hostname | default(mariadb_hostname) }}"
 
 - name: "{{ apb_action }} secret with DB credentials"
   k8s:
