@@ -47,7 +47,7 @@ check_secret() {
 			echo "$data"
 			echo "$data" | jq -e "select(
 				.DB_HOST? and
-				.DB_READREPLICA_HOST? and
+				.DB_READREPLICA_HOSTS? and
 				.DB_NAME? and
 				.DB_PASSWORD? and
 				.DB_PORT? and
@@ -60,12 +60,12 @@ check_secret() {
 }
 
 check_secret_without_readreplica() {
-	# the DB_READREPLICA_HOST secret in the project should be empty
+	# the DB_READREPLICA_HOSTS secret in the project should be empty
 	check_secret
 	run bash -c '
 			set -euo pipefail
 			db_readreplica_host=$(oc get secret test-dbaas-secret --export \
-				--output="jsonpath={.data.DB_READREPLICA_HOST}")
+				--output="jsonpath={.data.DB_READREPLICA_HOSTS}")
 			echo "$db_readreplica_host"
 			[[ -z "$db_readreplica_host" ]]
 		'

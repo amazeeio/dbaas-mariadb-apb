@@ -31,7 +31,7 @@
           DB_TYPE: "{{ 'mariadb' }}"
           DB_NAME: "{{ create_db_name }}"
           DB_HOST: "{{ app_name }}"
-          DB_READREPLICA_HOST: "{% if mariadb_readreplica_hostname %}{{ app_readreplica_name }}{% endif %}"
+          DB_READREPLICA_HOSTS: "{% if mariadb_readreplica_hostname %}{{ app_readreplica_name }}{% endif %}"
           DB_PORT: "{{ mariadb_port }}"
           DB_USER: "{{ create_db_user }}"
           DB_PASSWORD: "{{ create_db_password }}"
