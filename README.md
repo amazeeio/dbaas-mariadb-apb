@@ -115,6 +115,15 @@ svcat provision test-dbaas --class localregistry-dbaas-mariadb-apb --plan develo
 svcat deprovision test-dbaas --class localregistry-dbaas-mariadb-apb --plan development --wait
 ```
 
+### Smoke test
+
+Once the APB is deployed to a cluster, run some smoke tests which provision, sanity-check, and deprovision a development and a production service.
+
+```bash
+oc new-project test-dbaas
+./smoke-test.sh
+```
+
 ## Release
 
 An automatic Docker build is set up for this repository. If you change stuff in `apb.yml` don't forget to run `apb prepare` before committing.
