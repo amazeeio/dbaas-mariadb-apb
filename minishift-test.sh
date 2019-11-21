@@ -1,6 +1,10 @@
 #!/usr/bin/env bats
 
+# helper functions
+
 provision() {
+	oc new-project "test-dbaas-$1-$(
+		LC_CTYPE=C tr -dc 'a-z0-9' < /dev/urandom | fold -w 8 | head -n 1)"
 	run svcat provision test-dbaas \
 		--class localregistry-dbaas-mariadb-apb \
 		--plan $1 \
@@ -73,6 +77,31 @@ check_secret_without_readreplica() {
 	[[ $status -eq 0 ]]
 }
 
+check_username_prefix() {
+	run bash -c '
+			set -euo pipefail
+			namespace=$(oc config view --minify --output="jsonpath={..namespace}")
+			db_user=$(oc get secret test-dbaas-secret -o json --export |
+				jq -re ".data.DB_USER" | base64 -d)
+			echo "$db_user"
+			echo "$db_user" | grep "^$(printf "%.10s" "$namespace")_" > /dev/null
+		'
+	echo "$output"
+	[[ $status -eq 0 ]]
+}
+
+check_username_length() {
+	run bash -c '
+			set -euo pipefail
+			db_user=$(oc get secret test-dbaas-secret --export \
+				--output="jsonpath={.data.DB_USER}" | base64 -d)
+			echo "$db_user"
+			echo -n "$db_user" | grep -E "^.{,16}$" > /dev/null
+		'
+	echo "$output"
+	[[ $status -eq 0 ]]
+}
+
 # takes a single "true" or "false" argument that determines if the function
 # checks for the existence or not of the readreplica service
 check_readreplica_service() {
@@ -103,6 +132,8 @@ deprovision() {
 	[[ $status -eq 0 ]]
 }
 
+# test cases (run sequentially)
+
 @test "provision a service (development)" {
 	provision development
 }
@@ -114,6 +145,12 @@ deprovision() {
 }
 @test "check the contents of the secret (development)" {
 	check_secret
+}
+@test "check that the username prefix matches the namespace (development)" {
+	check_username_prefix
+}
+@test "check that the username is <= 16 chars (development)" {
+	check_username_length
 }
 @test "unbind the secret (development)" {
 	unbind
@@ -153,6 +190,12 @@ deprovision() {
 }
 @test "check the contents of the secret (production)" {
 	check_secret
+}
+@test "check that the username prefix matches the namespace (production)" {
+	check_username_prefix
+}
+@test "check that the username is <= 16 chars (production)" {
+	check_username_length
 }
 @test "unbind the secret (production)" {
 	unbind
